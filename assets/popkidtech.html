@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAMPAN-XMD TERMINAL</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: #00ff9f;
+  font-family: 'Share Tech Mono', monospace;
+  overflow: hidden;
+}
+
+/* MATRIX BACKGROUND */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* TERMINAL BOX */
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: auto;
+  margin-top: 10%;
+  padding: 20px;
+  border: 1px solid #00ff9f;
+  background: rgba(0,0,0,0.7);
+  box-shadow: 0 0 20px #00ff9f;
+}
+
+/* TITLE */
+.title {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+/* BLINK CURSOR */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  background: #00ff9f;
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%,50%,100% {opacity:1;}
+  25%,75% {opacity:0;}
+}
+
+/* BUTTON */
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 1px solid #00ff9f;
+  color: #00ff9f;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.btn:hover {
+  background: #00ff9f;
+  color: black;
+}
+
+/* STATUS */
+.status {
+  margin-top: 10px;
+  color: #0f0;
+}
+
+/* MUSIC BUTTON */
+.music-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: black;
+  border: 1px solid #00ff9f;
+  color: #00ff9f;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* FOOTER */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: #00ff9f;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<button class="music-btn" onclick="toggleMusic()">🎧</button>
+
+<div class="container">
+  <div class="title" id="typing"></div>
+
+  <div class="status">🟢 SYSTEM ONLINE</div>
+
+  <a href="https://whatsapp.com/channel/0029Vb8DGUCDDmFTDzBKDf2j" class="btn" id="version">
+    Loading version...
+  </a>
+</div>
+
+<footer>
+  > Developed by JAMPAN-XMD
+</footer>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="https://files.catbox.moe/fcj76y.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// MATRIX EFFECT
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+const letters = "01";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#0f0";
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+      drops[i] = 0;
+
+    drops[i]++;
+  }
+}
+
+setInterval(draw, 33);
+
+// TYPING EFFECT
+const text = "JAMPAN-XMD CONNECTED SUCCESFULY...";
+let i = 0;
+
+function type() {
+  if (i < text.length) {
+    document.getElementById("typing").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(type, 50);
+  } else {
+    document.getElementById("typing").innerHTML += '<span class="cursor"></span>';
+  }
+}
+type();
+
+// FETCH VERSION
+fetch('https://raw.githubusercontent.com/jampanxdm-creator/JAMPAN-XMD/master/package.json')
+.then(res => res.json())
+.then(data => {
+  document.getElementById("version").textContent = "Version: " + data.version;
+})
+.catch(() => {
+  document.getElementById("version").textContent = "Version: UNKNOWN";
+});
+
+// MUSIC
+const music = document.getElementById("bgMusic");
+let playing = false;
+
+function toggleMusic() {
+  if (!playing) {
+    music.play();
+  } else {
+    music.pause();
+  }
+  playing = !playing;
+}
+</script>
+
+</body>
+</html>
